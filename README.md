@@ -1,2 +1,2 @@
 # Satoshiest.github.io
-My web portfolio
+Personal website made with HTML, CSS, and JavaScript, using Bootstrap 5
