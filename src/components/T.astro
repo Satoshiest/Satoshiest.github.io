@@ -1,0 +1,13 @@
+---
+/**
+ * Bilingual text. Both languages are rendered; global.css hides the one
+ * that does not match <html lang>. Keeps the toggle instant and JS-free
+ * after the initial switch.
+ */
+interface Props {
+  en: string;
+  ja: string;
+}
+const { en, ja } = Astro.props;
+---
+<span data-lang="en">{en}</span><span data-lang="ja">{ja}</span>

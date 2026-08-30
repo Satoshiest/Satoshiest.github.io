@@ -1,0 +1,197 @@
+---
+import { nav, profile } from '../data/site';
+import T from './T.astro';
+---
+<header class="site-header" id="site-header">
+  <div class="wrap bar">
+    <a class="brand" href="#top" aria-label={profile.name.en}>
+      <span class="mark">{profile.monogram}</span>
+    </a>
+
+    <nav class="nav" aria-label="Primary">
+      {nav.map((item) => (
+        <a href={`#${item.id}`}><T en={item.label.en} ja={item.label.ja} /></a>
+      ))}
+    </nav>
+
+    <div class="tail">
+      <button type="button" class="lang" id="lang-toggle" aria-live="polite">
+        <span data-lang="en">日本語</span><span data-lang="ja">English</span>
+      </button>
+      <button
+        type="button"
+        class="burger"
+        id="burger"
+        aria-expanded="false"
+        aria-controls="mobile-nav"
+      >
+        <span class="sr-only">Menu</span>
+        <span class="bars" aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="mobile" id="mobile-nav" hidden>
+    <div class="wrap">
+      {nav.map((item) => (
+        <a href={`#${item.id}`} data-close><T en={item.label.en} ja={item.label.ja} /></a>
+      ))}
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 50;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    background: color-mix(in srgb, var(--bg) 72%, transparent);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.3s ease, background 0.3s ease;
+  }
+  .site-header.is-stuck {
+    border-bottom-color: var(--line);
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    height: 68px;
+  }
+
+  .mark {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: 0.06em;
+    border: 1px solid var(--line-hi);
+    border-radius: 8px;
+    padding: 0.3rem 0.55rem;
+    transition: border-color 0.25s ease, color 0.25s ease;
+  }
+  .brand:hover .mark { border-color: var(--accent); color: var(--accent); }
+
+  .nav {
+    display: flex;
+    gap: 2rem;
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+  .nav a { position: relative; transition: color 0.2s ease; }
+  .nav a::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: -6px;
+    height: 1px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s ease;
+  }
+  .nav a:hover { color: var(--text); }
+  .nav a:hover::after { transform: scaleX(1); }
+
+  .tail { display: flex; align-items: center; gap: 0.5rem; }
+
+  .lang {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.4rem 0.8rem;
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  }
+  .lang:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--accent-dim);
+  }
+
+  .burger {
+    display: none;
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    width: 38px; height: 34px;
+    cursor: pointer;
+    position: relative;
+  }
+  .bars, .bars::before, .bars::after {
+    position: absolute;
+    left: 50%;
+    width: 16px; height: 1.5px;
+    background: var(--text);
+    transform: translateX(-50%);
+    transition: transform 0.25s ease, opacity 0.2s ease;
+  }
+  .bars { top: 50%; margin-top: -0.75px; }
+  .bars::before { content: ''; top: -5px; }
+  .bars::after { content: ''; top: 5px; }
+  .burger[aria-expanded='true'] .bars { background: transparent; }
+  .burger[aria-expanded='true'] .bars::before { transform: translateX(-50%) translateY(5px) rotate(45deg); }
+  .burger[aria-expanded='true'] .bars::after { transform: translateX(-50%) translateY(-5px) rotate(-45deg); }
+
+  .mobile {
+    border-top: 1px solid var(--line);
+    background: var(--bg);
+  }
+  .mobile .wrap {
+    display: flex;
+    flex-direction: column;
+    padding-block: 0.75rem 1.5rem;
+  }
+  .mobile a {
+    padding: 0.85rem 0;
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .mobile a:last-child { border-bottom: none; }
+
+  @media (max-width: 720px) {
+    .nav { display: none; }
+    .burger { display: block; }
+  }
+</style>
+
+<script>
+  const header = document.getElementById('site-header')!;
+  const burger = document.getElementById('burger')!;
+  const mobile = document.getElementById('mobile-nav')!;
+  const langBtn = document.getElementById('lang-toggle')!;
+
+  // ヘッダーの境界線をスクロール量で出し分ける
+  const onScroll = () => header.classList.toggle('is-stuck', window.scrollY > 12);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  const setMenu = (open: boolean) => {
+    burger.setAttribute('aria-expanded', String(open));
+    mobile.hidden = !open;
+  };
+  burger.addEventListener('click', () =>
+    setMenu(burger.getAttribute('aria-expanded') !== 'true')
+  );
+  mobile.querySelectorAll('[data-close]').forEach((a) =>
+    a.addEventListener('click', () => setMenu(false))
+  );
+
+  langBtn.addEventListener('click', () => {
+    const next = document.documentElement.lang === 'ja' ? 'en' : 'ja';
+    document.documentElement.lang = next;
+    try {
+      localStorage.setItem('lang', next);
+    } catch {
+      /* プライベートモードなどでは保存しないだけ */
+    }
+  });
+</script>

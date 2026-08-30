@@ -1,0 +1,44 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import About from '../components/About.astro';
+import Experience from '../components/Experience.astro';
+import Work from '../components/Work.astro';
+import Contact from '../components/Contact.astro';
+import Footer from '../components/Footer.astro';
+---
+<Base>
+  <Header />
+  <main id="main">
+    <Hero />
+    <About />
+    <Experience />
+    <Work />
+    <Contact />
+  </main>
+  <Footer />
+</Base>
+
+<script>
+  // スクロールに合わせて要素をフェードインさせる。
+  // .reveal を隠すのは html.js が付いているときだけなので、
+  // JS が読み込めなかった場合は最初から見えている。
+  const targets = document.querySelectorAll('.reveal');
+
+  if (!('IntersectionObserver' in window)) {
+    targets.forEach((el) => el.classList.add('is-in'));
+  } else {
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('is-in');
+          io.unobserve(entry.target);
+        });
+      },
+      { rootMargin: '0px 0px -12% 0px', threshold: 0.05 }
+    );
+    targets.forEach((el) => io.observe(el));
+  }
+</script>

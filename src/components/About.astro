@@ -1,0 +1,125 @@
+---
+import { about } from '../data/site';
+import T from './T.astro';
+---
+<section class="section" id="about">
+  <div class="wrap">
+    <p class="section-label">01 — <T en={about.heading.en} ja={about.heading.ja} /></p>
+
+    <div class="cols">
+      <div class="copy reveal">
+        {about.paragraphs.map((p) => (
+          <p class="para"><T en={p.en} ja={p.ja} /></p>
+        ))}
+
+        <div class="stack">
+          <h3 class="stack-title"><T en={about.stackHeading.en} ja={about.stackHeading.ja} /></h3>
+          {about.stack.map((row) => (
+            <div class="stack-row">
+              <span class="stack-group"><T en={row.group.en} ja={row.group.ja} /></span>
+              <ul class="chips">
+                {row.items.map((i) => <li>{i}</li>)}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div class="portrait reveal">
+        <div class="frame">
+          <img
+            src="/img/profile.webp"
+            alt="Satoshi Kameyama at sunrise on a mountain summit"
+            width="1000"
+            height="1778"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cols {
+    display: grid;
+    grid-template-columns: 1.35fr 1fr;
+    gap: clamp(2.5rem, 6vw, 5rem);
+    align-items: start;
+  }
+
+  .para {
+    color: var(--muted);
+    font-size: clamp(1rem, 1.5vw, 1.1rem);
+    max-width: 58ch;
+  }
+  .para + .para { margin-top: 1.25rem; }
+
+  .stack { margin-top: 3rem; }
+  .stack-title {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--faint);
+    margin-bottom: 1.25rem;
+  }
+
+  .stack-row {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 1rem;
+    padding-block: 0.9rem;
+    border-top: 1px solid var(--line);
+    align-items: baseline;
+  }
+  .stack-group { font-size: 0.85rem; color: var(--text); }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+  .chips li {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 0.22rem 0.55rem;
+    background: var(--surface);
+  }
+
+  .frame {
+    position: relative;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: var(--surface);
+  }
+  .frame img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+  }
+  .frame:hover img { transform: scale(1.02); }
+  .frame::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(8, 9, 11, 0.5), transparent 55%);
+    pointer-events: none;
+  }
+
+  @media (max-width: 860px) {
+    .cols { grid-template-columns: 1fr; }
+    .portrait { order: -1; max-width: 320px; }
+  }
+  @media (max-width: 520px) {
+    .stack-row { grid-template-columns: 1fr; gap: 0.5rem; }
+  }
+</style>

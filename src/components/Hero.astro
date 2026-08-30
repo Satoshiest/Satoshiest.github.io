@@ -1,0 +1,211 @@
+---
+import { profile } from '../data/site';
+import T from './T.astro';
+---
+<section class="hero" id="top">
+  <div class="grid-bg" aria-hidden="true"></div>
+  <div class="glow" aria-hidden="true"></div>
+
+  <div class="wrap inner">
+    <p class="status">
+      <span class="dot" aria-hidden="true"></span>
+      <T en={profile.status.en} ja={profile.status.ja} />
+    </p>
+
+    <h1 class="name">
+      <span class="line"><T en={profile.name.en} ja={profile.name.ja} /></span>
+    </h1>
+
+    <p class="role">
+      <T en={profile.role.en} ja={profile.role.ja} />
+      <span class="sep" aria-hidden="true">/</span>
+      <span class="loc"><T en={profile.location.en} ja={profile.location.ja} /></span>
+    </p>
+
+    <p class="tagline"><T en={profile.tagline.en} ja={profile.tagline.ja} /></p>
+
+    <div class="actions">
+      <a class="btn primary" href="#work">
+        <span data-lang="en">See the work</span><span data-lang="ja">プロジェクトを見る</span>
+        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+          <path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"
+                stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </a>
+      <a class="btn ghost" href={profile.primary.href} target="_blank" rel="noopener noreferrer">
+        <span data-lang="en">Connect on LinkedIn</span><span data-lang="ja">LinkedIn で見る</span>
+      </a>
+    </div>
+
+    <ul class="socials">
+      {profile.socials.map((s) => (
+        <li><a href={s.href} target="_blank" rel="noopener noreferrer">{s.label}</a></li>
+      ))}
+    </ul>
+  </div>
+
+  <a class="scroll-cue" href="#about" aria-label="Scroll to about">
+    <span class="cue-line" aria-hidden="true"></span>
+  </a>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    padding-block: 8rem 6rem;
+  }
+
+  /* 背景の細いグリッド。上下はマスクでフェードさせる */
+  .grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    background-size: 72px 72px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, #000 30%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, #000 30%, transparent 100%);
+  }
+
+  .glow {
+    position: absolute;
+    top: -20%;
+    left: 50%;
+    width: min(900px, 120vw);
+    aspect-ratio: 1;
+    transform: translateX(-50%);
+    background: radial-gradient(circle, rgba(198, 242, 78, 0.09) 0%, transparent 62%);
+    pointer-events: none;
+  }
+
+  .inner { position: relative; }
+
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.4rem 0.9rem;
+    margin-bottom: 2rem;
+  }
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 0 rgba(198, 242, 78, 0.55);
+    animation: pulse 2.6s ease-out infinite;
+  }
+  @keyframes pulse {
+    70% { box-shadow: 0 0 0 8px rgba(198, 242, 78, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(198, 242, 78, 0); }
+  }
+
+  .name {
+    font-size: clamp(2.8rem, 10vw, 6.5rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    margin-bottom: 1.25rem;
+  }
+
+  .role {
+    font-family: var(--font-display);
+    font-size: clamp(1.05rem, 2.4vw, 1.5rem);
+    color: var(--text);
+    margin-bottom: 1.75rem;
+  }
+  .sep { color: var(--accent); margin-inline: 0.6rem; }
+  .loc { color: var(--muted); }
+
+  .tagline {
+    max-width: 46ch;
+    color: var(--muted);
+    font-size: clamp(1rem, 1.6vw, 1.125rem);
+    margin-bottom: 2.5rem;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 3rem;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.8rem 1.4rem;
+    border-radius: 999px;
+    font-size: 0.925rem;
+    font-weight: 500;
+    border: 1px solid transparent;
+    transition: transform 0.2s ease, background 0.2s ease,
+                border-color 0.2s ease, color 0.2s ease;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn svg { transition: transform 0.2s ease; }
+  .btn:hover svg { transform: translateX(3px); }
+
+  .primary { background: var(--accent); color: #0a0d05; }
+  .primary:hover { background: #d4ff5f; }
+
+  .ghost { border-color: var(--line-hi); color: var(--text); }
+  .ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  .socials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    color: var(--faint);
+  }
+  .socials a { transition: color 0.2s ease; }
+  .socials a:hover { color: var(--accent); }
+
+  .scroll-cue {
+    position: absolute;
+    bottom: 2.25rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px; height: 44px;
+  }
+  .cue-line {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 1px;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent, var(--line-hi));
+    overflow: hidden;
+  }
+  .cue-line::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 1px;
+    height: 40%;
+    background: var(--accent);
+    animation: trickle 2.2s cubic-bezier(0.6, 0, 0.4, 1) infinite;
+  }
+  @keyframes trickle {
+    0%   { top: -40%; opacity: 0; }
+    30%  { opacity: 1; }
+    100% { top: 100%; opacity: 0; }
+  }
+
+  @media (max-width: 720px) {
+    .scroll-cue { display: none; }
+  }
+</style>

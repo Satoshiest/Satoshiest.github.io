@@ -1,0 +1,175 @@
+---
+import { education, experience, showMore } from '../data/site';
+import T from './T.astro';
+
+// 最初に見せる件数。残りは Show more で開く
+const VISIBLE = 2;
+const hiddenCount = Math.max(0, experience.items.length - VISIBLE);
+---
+<section class="section" id="experience">
+  <div class="wrap">
+    <p class="section-label">02 — <T en={experience.heading.en} ja={experience.heading.ja} /></p>
+
+    <ol class="timeline" id="exp-list">
+      {experience.items.map((job, i) => (
+        <li class:list={['entry', 'reveal', { extra: i >= VISIBLE }]}>
+          <span class="period"><T en={job.period.en} ja={job.period.ja} /></span>
+          <div class="body">
+            <h3 class="role"><T en={job.title.en} ja={job.title.ja} /></h3>
+            <p class="org"><T en={job.org.en} ja={job.org.ja} /></p>
+            {(job.detail.en || job.detail.ja) && (
+              <p class="detail"><T en={job.detail.en} ja={job.detail.ja} /></p>
+            )}
+          </div>
+        </li>
+      ))}
+    </ol>
+
+    {hiddenCount > 0 && (
+      <button type="button" class="more" id="exp-more" aria-controls="exp-list" hidden>
+        <span class="lbl lbl-more">
+          <T en={showMore.more.en} ja={showMore.more.ja} />
+          <span class="count">({hiddenCount})</span>
+        </span>
+        <span class="lbl lbl-less"><T en={showMore.less.en} ja={showMore.less.ja} /></span>
+        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+          <path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6"
+                stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </button>
+    )}
+
+    <h3 class="sub-heading">
+      <T en={education.heading.en} ja={education.heading.ja} />
+    </h3>
+    <ol class="timeline">
+      {education.items.map((item) => (
+        <li class="entry reveal">
+          <span class="period"><T en={item.period.en} ja={item.period.ja} /></span>
+          <div class="body">
+            <h3 class="role"><T en={item.title.en} ja={item.title.ja} /></h3>
+            <p class="org"><T en={item.org.en} ja={item.org.ja} /></p>
+            <p class="detail"><T en={item.detail.en} ja={item.detail.ja} /></p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .timeline { border-top: 1px solid var(--line); }
+
+  .entry {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: clamp(1rem, 4vw, 3rem);
+    padding-block: 2rem;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+    transition: background 0.3s ease;
+  }
+  .entry::before {
+    content: '';
+    position: absolute;
+    left: calc(var(--gutter) * -1);
+    right: calc(var(--gutter) * -1);
+    top: 0; bottom: 0;
+    background: linear-gradient(90deg, var(--accent-dim), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    pointer-events: none;
+  }
+  .entry:hover::before { opacity: 1; }
+
+  /* 折りたたみは JS がある環境だけ。素の HTML では全件見える */
+  :global(html.js) .timeline[data-collapsed='true'] .extra { display: none; }
+
+  .period {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.05em;
+    color: var(--faint);
+    padding-top: 0.3rem;
+  }
+
+  .role { font-size: clamp(1.15rem, 2.5vw, 1.5rem); }
+  .org {
+    color: var(--accent);
+    font-size: 0.9rem;
+    margin-top: 0.3rem;
+  }
+  .detail {
+    color: var(--muted);
+    margin-top: 0.75rem;
+    max-width: 60ch;
+    font-size: 0.95rem;
+  }
+
+  .more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+    padding: 0.6rem 1.2rem;
+    background: transparent;
+    border: 1px solid var(--line-hi);
+    border-radius: 999px;
+    color: var(--muted);
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  }
+  .more:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--accent-dim);
+  }
+  .more svg { transition: transform 0.25s ease; }
+  .more[aria-expanded='true'] svg { transform: rotate(180deg); }
+
+  .count { color: var(--faint); margin-left: 0.15rem; }
+  .more[aria-expanded='false'] .lbl-less { display: none; }
+  .more[aria-expanded='true'] .lbl-more { display: none; }
+
+  .sub-heading {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--faint);
+    margin: 4rem 0 0.5rem;
+  }
+
+  @media (max-width: 720px) {
+    .entry { grid-template-columns: 1fr; gap: 0.5rem; }
+  }
+</style>
+
+<script>
+  const list = document.getElementById('exp-list');
+  const btn = document.getElementById('exp-more') as HTMLButtonElement | null;
+
+  if (list && btn) {
+    // 初期状態の折りたたみは JS 側で付ける。JS が落ちた場合は全件表示のまま
+    list.dataset.collapsed = 'true';
+    btn.setAttribute('aria-expanded', 'false');
+    btn.hidden = false;
+
+    btn.addEventListener('click', () => {
+      const collapsed = list.dataset.collapsed === 'true';
+      list.dataset.collapsed = String(!collapsed);
+      btn.setAttribute('aria-expanded', String(collapsed));
+
+      if (collapsed) {
+        // 隠れていた間は交差判定が走らないので、開いた時点で表示済みにする
+        list.querySelectorAll('.extra').forEach((el) => el.classList.add('is-in'));
+      } else {
+        // 閉じたらセクションの先頭に戻す
+        document.getElementById('experience')?.scrollIntoView({ block: 'start' });
+      }
+    });
+  }
+</script>
